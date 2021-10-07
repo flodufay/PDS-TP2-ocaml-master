@@ -9,8 +9,8 @@ type token =
   | LC
   | RC
   | COM
-  | PLUS
-  | MINUS
+  | ADD
+  | SUB
   | MUL
   | DIV
   | ASSIGN

@@ -37,9 +37,9 @@ rule tokenize = parse
   | ')'
       { RP        :: tokenize lexbuf }
   | '+'
-      { PLUS      :: tokenize lexbuf }
+      { ADD      :: tokenize lexbuf }
   | '-'
-      { MINUS      :: tokenize lexbuf }
+      { SUB      :: tokenize lexbuf }
   | '*'
       { MUL      :: tokenize lexbuf }
   | '/'
