@@ -38,9 +38,9 @@ and expression = parser
 
 and expression_aux e1 = parser
   | [< 'ADD;  e2 = factor; e = expression_aux (AddExpression (e1, e2)) >] -> e
-  | [< 'SUB;  e2 = factor; e = expression_aux (SubstractExpression (e1, e2)) >] -> e
-  | [< 'MUL;  e2 = factor; e = expression_aux (MultiplyExpression (e1, e2)) >] -> e
-  | [< 'DIV;  e2 = factor; e = expression_aux (DivideExpression (e1, e2)) >] -> e
+  | [< 'SUB;  e2 = factor; e = expression_aux (SubExpression (e1, e2)) >] -> e
+  | [< 'MUL;  e2 = factor; e = expression_aux (MulExpression (e1, e2)) >] -> e
+  | [< 'DIV;  e2 = factor; e = expression_aux (DivExpression (e1, e2)) >] -> e
   | [<>] -> e1
   (* TODO : that's all? *)
 
