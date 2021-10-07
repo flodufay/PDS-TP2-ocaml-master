@@ -8,5 +8,6 @@ let rec prettyprint ast =
   | MulExpression (l, r) -> "(" ^ (prettyprint l) ^ " * " ^ (prettyprint r) ^ ")"
   | DivExpression (l, r) -> "(" ^ (prettyprint l) ^ " / " ^ (prettyprint r) ^ ")"
   | IntegerExpression i -> string_of_int i
+  | IdentExpression s -> s
 
 (* TODO : extend when you extend the language *)

@@ -32,18 +32,23 @@ rule tokenize = parse
       { tokenize lexbuf }
 
   (* characters *)
+  | ':' '='
+      { ASSIGN    :: tokenize lexbuf }
   | '('
       { LP        :: tokenize lexbuf }
   | ')'
       { RP        :: tokenize lexbuf }
   | '+'
-      { ADD      :: tokenize lexbuf }
+      { ADD       :: tokenize lexbuf }
   | '-'
-      { SUB      :: tokenize lexbuf }
+      { SUB       :: tokenize lexbuf }
   | '*'
-      { MUL      :: tokenize lexbuf }
+      { MUL       :: tokenize lexbuf }
   | '/'
-      { DIV      :: tokenize lexbuf }
+      { DIV       :: tokenize lexbuf }
+  | letter (letter | digit)* as ident
+      { IDENT(ident) :: tokenize lexbuf }
+
 
   (* TODO : other keywords *)
 

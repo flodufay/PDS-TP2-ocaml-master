@@ -95,7 +95,10 @@ let llvm_mul ~(res_var : llvm_var) ~(res_type : llvm_type) ~(left : llvm_value) 
 
 let llvm_div ~(res_var : llvm_var) ~(res_type : llvm_type) ~(left : llvm_value) ~(right : llvm_value) : llvm_instr =
   string_of_var res_var ^ " = udiv " ^ string_of_type res_type ^ " " ^ string_of_value left ^ ", " ^ string_of_value right ^ "\n"
-      
+
+let llvm_assign ~(res_var : llvm_var) ~(right : llvm_value) : llvm_instr =
+  string_of_var res_var ^ " = " ^ string_of_value right ^ "\n"
+
 let llvm_return ~(ret_type : llvm_type) ~(ret_value : llvm_value) : llvm_instr =
   "ret " ^ string_of_type ret_type ^ " " ^ string_of_value ret_value ^ "\n"
 

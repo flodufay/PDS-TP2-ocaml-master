@@ -41,6 +41,7 @@ and expression_aux e1 = parser
   | [< 'SUB;  e2 = factor; e = expression_aux (SubExpression (e1, e2)) >] -> e
   | [< 'MUL;  e2 = factor; e = expression_aux (MulExpression (e1, e2)) >] -> e
   | [< 'DIV;  e2 = factor; e = expression_aux (DivExpression (e1, e2)) >] -> e
+  | [< 'ASSIGN ;  e2 = factor; e = expression_aux (AssignExpression (e1, e2)) >] -> e
   | [<>] -> e1
   (* TODO : that's all? *)
 
@@ -53,6 +54,8 @@ and factor_aux e1 = parser
 
 and primary = parser
   | [< 'INTEGER x >] -> IntegerExpression x
+  | [< 'IDENT s >] -> IdentExpression s
+
   (* TODO : that's all? *)
 
 and comma = parser
