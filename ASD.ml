@@ -8,8 +8,8 @@ type expression =
   | DivExpression of expression * expression
   | MulExpression of expression * expression
   | IntegerExpression of int
-  |IdentExpression of string
-  |AssignExpression of expression * expression
+  | IdentExpression of string
+  | AssignExpression of expression * expression
 
 type typ =
   | Type_Int
