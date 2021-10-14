@@ -11,9 +11,9 @@ type expression =
   | IdentExpression of string
   
 type statement =
-  | AssignExpression of expression * expression
+  | AssignStatement of expression * expression
 
 type typ =
   | Type_Int
 
-type program = expression | statement
+type program = statement

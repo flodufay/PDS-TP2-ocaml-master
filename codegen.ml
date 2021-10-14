@@ -5,9 +5,9 @@ open SymbolTable
 
        
 (* main function. returns only a string: the generated code *)
-let rec ir_of_ast (prog : expression) : llvm_ir = (* TODO: change 'expression' when you extend the language *)
+let rec ir_of_ast (prog : program) : llvm_ir = (* TODO: change 'expression' when you extend the language *)
   (* TODO : change when you extend the language *)
-  let ir, v = ir_of_expression prog in
+  let ir, v = ir_of_statement prog in
   (* adds the return instruction *)
   let ir = ir @: llvm_return ~ret_type:LLVM_type_i32 ~ret_value:v in
   (* We create the function main *)
