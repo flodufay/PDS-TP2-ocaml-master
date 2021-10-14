@@ -8,10 +8,12 @@ type expression =
   | DivExpression of expression * expression
   | MulExpression of expression * expression
   | IntegerExpression of int
-  |IdentExpression of string
-  |AssignExpression of expression * expression
+  | IdentExpression of string
+
+type statement =
+  | AssignStatement of expression * expression
 
 type typ =
   | Type_Int
 
-type program = expression
+type program = expression | statement

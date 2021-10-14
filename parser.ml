@@ -31,6 +31,7 @@ let list0 p sep = parser
 (* TODO : change when you extend the language *)
 let rec program = parser
   | [< e = expression; _ = Stream.empty ?? "unexpected input at the end" >] -> e
+  | [< s = statement; _ = Stream.empty ?? "unexpected input at the end" >] -> e
 
 
 and expression = parser
@@ -41,8 +42,14 @@ and expression_aux e1 = parser
   | [< 'SUB;  e2 = factor; e = expression_aux (SubExpression (e1, e2)) >] -> e
   | [< 'MUL;  e2 = factor; e = expression_aux (MulExpression (e1, e2)) >] -> e
   | [< 'DIV;  e2 = factor; e = expression_aux (DivExpression (e1, e2)) >] -> e
-  | [< 'ASSIGN ;  e2 = factor; e = expression_aux (AssignExpression (e1, e2)) >] -> e
   | [<>] -> e1
+  (* TODO : that's all? *)
+
+and statement = parser
+  | [< e1 = expression; s = statement_aux e1 >] -> s
+ 
+and statement_aux e1 = parser
+  | [< 'ASSIGN; e2 = factor; s = statement_aux (AssignStatement (e1, e2)) >] -> s
   (* TODO : that's all? *)
 
 and factor = parser
