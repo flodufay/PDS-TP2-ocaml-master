@@ -58,7 +58,7 @@ and ir_of_statement : statement -> llvm_ir * llvm_value = function
    match v1 with 
       | LLVM_i32 x -> failwith "pas content, assignation à un entier" 
       | LLVM_var s ->
-         let ir = ( ir1 @: llvm_assign ~res_var:s ~right:v2 ) @@ ir2 in
+         let ir = ir2 @@ ( ir1 @: llvm_assign ~res_var:s ~right:v2 ) in
          ir, LLVM_var s
 
 (* TODO: complete with new cases and functions when you extend your language *)
