@@ -49,10 +49,13 @@ and ir_of_expression : expression -> llvm_ir * llvm_value = function
      ir, LLVM_var x
   | IdentExpression s ->
      empty_ir, LLVM_var ("%" ^ s)
-  | AssignExpression (e1, e2) ->
-    let ir1, v1 = ir_of_expression e1 in
-    let ir2, v2 = ir_of_expression e2 in
-    match v1 with 
+
+
+and ir_of_statement : statement -> llvm_ir * llvm_value = function
+   | AssignStatement (e1, e2) ->
+   let ir1, v1 = ir_of_expression e1 in
+   let ir2, v2 = ir_of_expression e2 in
+   match v1 with 
       | LLVM_i32 x -> failwith "pas content, assignation à un entier" 
       | LLVM_var s ->
          let ir = ( ir1 @: llvm_assign ~res_var:s ~right:v2 ) @@ ir2 in

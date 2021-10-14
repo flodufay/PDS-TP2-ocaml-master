@@ -9,9 +9,9 @@ type expression =
   | MulExpression of expression * expression
   | IntegerExpression of int
   | IdentExpression of string
-
+  
 type statement =
-  | AssignStatement of expression * expression
+  | AssignExpression of expression * expression
 
 type typ =
   | Type_Int
