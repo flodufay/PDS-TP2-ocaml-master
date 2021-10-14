@@ -30,8 +30,10 @@ let list0 p sep = parser
 
 (* TODO : change when you extend the language *)
 let rec program = parser
-  | [< s = statement >] -> s
+  | [< s = list0 statement program_endl >] -> ProgramStatement(s)
 
+and program_endl = parser
+  | [< 'ENDL >] -> ()
 
 and expression = parser
   | [< e1 = factor; e = expression_aux e1 >] -> e
@@ -49,7 +51,7 @@ and statement = parser
  
 and statement_aux e1 = parser
   | [< 'ASSIGN; e2 = factor >] -> AssignStatement (e1, e2)
-  
+
   (* TODO : that's all? *)
 
 and factor = parser
