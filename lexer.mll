@@ -21,7 +21,7 @@ let blanks = [' ' '\n' '\t']
 rule tokenize = parse
   (* skip new lines and update line count (useful for error location) *)
   | '\n'
-      { let _ = new_line lexbuf in tokenize lexbuf }
+      { let _ = new_line lexbuf in ( ENDL :: tokenize lexbuf ) }
 
   (* skip other blanks *)
   | blanks

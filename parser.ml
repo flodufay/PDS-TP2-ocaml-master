@@ -49,6 +49,7 @@ and statement = parser
  
 and statement_aux e1 = parser
   | [< 'ASSIGN; e2 = factor >] -> AssignStatement (e1, e2)
+  
   (* TODO : that's all? *)
 
 and factor = parser

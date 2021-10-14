@@ -12,6 +12,8 @@ type expression =
   
 type statement =
   | AssignStatement of expression * expression
+  | ProgramStatement of statement list
+
 
 type typ =
   | Type_Int
