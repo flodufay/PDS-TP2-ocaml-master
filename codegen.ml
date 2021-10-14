@@ -55,10 +55,19 @@ and ir_of_statement : statement -> llvm_ir * llvm_value = function
    | AssignStatement (e1, e2) ->
    let ir1, v1 = ir_of_expression e1 in
    let ir2, v2 = ir_of_expression e2 in
+   begin
    match v1 with 
       | LLVM_i32 x -> failwith "pas content, assignation à un entier" 
       | LLVM_var s ->
          let ir = ir2 @@ ( ir1 @: llvm_assign ~res_var:s ~right:v2 ) in
          ir, LLVM_var s
+   end
+   | ProgramStatement (l) -> let rec program_statement_aux l res var = 
+      match l with
+         | t::q -> let ir, v = ir_of_statement t in
+            program_statement_aux q ( res @@ ir ) v
+         | _ -> res, var
+      in program_statement_aux l empty_ir (LLVM_i32 0)
+
 
 (* TODO: complete with new cases and functions when you extend your language *)
