@@ -13,7 +13,8 @@ type expression =
 type statement =
   | AssignStatement of expression * expression
   | ProgramStatement of statement list
-
+  | IfStatement of expression * statement
+  | IfElseStatement of expression * statement * statement
 
 type typ =
   | Type_Int

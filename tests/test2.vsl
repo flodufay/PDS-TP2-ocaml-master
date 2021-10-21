@@ -1,2 +1,6 @@
-a := 2 + 3
-b := a + 5
+IF n
+THEN
+a := n + 2
+ELSE
+c := n
+FI

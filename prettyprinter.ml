@@ -4,9 +4,11 @@ let rec prettyprint prog = prettyprint_sta prog
 
 and prettyprint_sta sta = match sta with
   | AssignStatement (e1, e2) -> (prettyprint_exp e1) ^ " := " ^ (prettyprint_exp e2) ^ "\n"
-  | ProgramStatement l -> match l with
+  | ProgramStatement l -> begin match l with
     | t :: q -> (prettyprint t) ^ (prettyprint (ProgramStatement q))
-    | [] -> ""
+    | [] -> "" end
+  | IfStatement (e, s1) -> "IF " ^ (prettyprint_exp e) ^ "\nTHEN\n" ^ (prettyprint_sta s1) ^ "FI\n"
+  | IfElseStatement (e, s1, s2) -> "IF " ^ (prettyprint_exp e) ^ "\nTHEN\n" ^ (prettyprint_sta s1) ^ "ELSE\n" ^ (prettyprint_sta s2) ^ "FI\n"
 
 and prettyprint_exp exp =
   match exp with

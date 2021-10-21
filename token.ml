@@ -2,11 +2,11 @@ type token =
     IDENT of string
   | TEXT of string
   | INTEGER of int
-  | LP
+  | LP (* parenthesis () *)
   | RP
-  | LB
+  | LB (* bracket [] *)
   | RB
-  | LC
+  | LC (* cub {} *)
   | RC
   | COM
   | ADD

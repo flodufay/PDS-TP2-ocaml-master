@@ -53,6 +53,18 @@ rule tokenize = parse
   (* TODO : other keywords *)
 
   (* other tokens (no conflict with keywords in VSL) *)
+  | "IF"
+      { IF_KW :: tokenize lexbuf }
+  | "THEN"
+      { THEN_KW :: tokenize lexbuf }
+  | "ELSE"
+      { ELSE_KW :: tokenize lexbuf }
+  | "FI"
+      { FI_KW :: tokenize lexbuf }
+  | "{"
+      { LC :: tokenize lexbuf }
+  | "}"
+      { RC :: tokenize lexbuf }
   | letter (letter | digit)* as lxm
       { IDENT lxm :: tokenize lexbuf }
   | '"' (ascii* as lxm) '"'
