@@ -58,7 +58,7 @@ and statement = parser
   | [< 'ELSE_KW; 'ENDL; s2 = statement; 'ENDL; 'FI_KW >] -> IfElseStatement (e, s, s2)
 
 and statement_aux e1 = parser
-  | [< 'ASSIGN; e2 = expression >] -> print_endline("assign") ; AssignStatement (e1, e2)
+  | [< 'ASSIGN; e2 = expression >] -> (* print_endline("assign") ; *) AssignStatement (e1, e2)
 
 and factor = parser
   | [< e1 = primary; e = factor_aux e1 >] -> e
