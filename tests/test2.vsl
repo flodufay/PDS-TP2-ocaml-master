@@ -1,13 +1,6 @@
-<<<<<<< HEAD
 IF n
 THEN
 a := n + 2
 ELSE
 a := n + 3
 FI
-=======
-WHILE n-1
-DO
-    x := x + 1
-DONE
->>>>>>> 5836452b0f4902bdaf7ef9ed80406e67aa5ab16a
