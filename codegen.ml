@@ -75,7 +75,14 @@ and ir_of_statement : statement -> llvm_ir * llvm_value = function
    let tmpThen, tmpFi = newtmp(), newtmp() in
    let  ir = (((((((((((empty_ir @: llvm_cmp x v1) @: llvm_goToIf (LLVM_var x) tmpThen tmpFi) @: "\n" )@: string_of_label tmpThen) @: " : \n") @@ ir2) @: " \n")@: llvm_goToThen tmpFi )@: "\n" )@: string_of_label tmpFi )@: " : \n \n") in
    ir, v2
-   
+   | IfElseStatement(e, s1, s2) ->
+   let ir1, v1 = ir_of_expression e in
+   let ir2, v2 = ir_of_statement s1 in
+   let ir3, v3 = ir_of_statement s2 in
+   let x = newtmp() in 
+   let tmpThen, tmpElse, tmpFi = newtmp(), newtmp(), newtmp() in
+   let  ir = (((((((((((((((((empty_ir @: llvm_cmp x v1) @: llvm_goToIf (LLVM_var x) tmpThen tmpElse) @: "\n" )@: string_of_label tmpThen) @: " : \n") @@ ir2) @: " \n")@: llvm_goToThen tmpFi )@: "\n" )@: string_of_label tmpElse) @: " : \n") @@ ir3) @: " \n")@: llvm_goToThen tmpFi )@: "\n" )@: string_of_label tmpFi )@: " : \n \n") in
+   ir, v2
 
 
 (* TODO: complete with new cases and functions when you extend your language *)

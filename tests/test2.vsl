@@ -1,4 +1,6 @@
 IF n
 THEN
 a := n + 2
+ELSE
+a := n + 3
 FI
