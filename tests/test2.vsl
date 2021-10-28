@@ -1,6 +1,9 @@
 INT a, b, c
 INT d
-IF n
+READ d
+IF b
 THEN
-a := n + 2
+a := d + 2
+ELSE
+a := c + 2
 FI

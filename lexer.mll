@@ -76,6 +76,8 @@ rule tokenize = parse
 
   | "INT"
       { INT_KW :: tokenize lexbuf }
+  | "READ"
+      { READ_KW :: tokenize lexbuf }
 
   | letter (letter | digit)* as lxm
       { IDENT lxm :: tokenize lexbuf }

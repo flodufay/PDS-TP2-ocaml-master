@@ -4,13 +4,13 @@ let rec indentation n = match n with
   | n when n <= 0 -> ""
   | n -> "\t" ^ (indentation (n - 1))
 
-and str_of_li l = match l with
+and str_of_li_err l err = match l with
   | [] -> ""
   | [x] -> begin match x with
     | IdentExpression s -> s
-    | _ -> failwith "must declare identifiers"
+    | _ -> failwith err ^ " d'un objet qui n'est pas une variable"
     end
-  | t :: q -> (str_of_li [t]) ^ ", " ^ (str_of_li q)
+  | t :: q -> (str_of_li_err [t] err) ^ ", " ^ (str_of_li_err q err)
 
 and prettyprint prog = prettyprint_sta prog 1
 
@@ -31,7 +31,9 @@ and prettyprint_sta sta ind = match sta with
                              ^ (indentation ind) ^ "DO\n"
                              ^ (prettyprint_sta s (ind + 1))
                              ^ (indentation ind) ^ "DONE\n"
-  | IntStatement l -> (indentation ind) ^ "INT " ^ (str_of_li l) ^ "\n"
+  | IntStatement l -> (indentation ind) ^ "INT " ^ (str_of_li_err l "declaration") ^ "\n"
+  | ReadStatement l -> (indentation ind) ^ "READ " ^ (str_of_li_err l "lecture") ^ "\n"
+  | PrintStatement l -> (indentation ind) ^ "PRINT " ^ (List.fold_right (fun e str -> (prettyprint_exp e ^ ", " ^ str)) l "") ^ "\n"
 
 and prettyprint_exp exp =
   match exp with

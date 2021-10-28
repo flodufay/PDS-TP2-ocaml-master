@@ -17,6 +17,8 @@ type statement =
   | IfElseStatement of expression * statement * statement
   | WhileStatement of expression * statement
   | IntStatement of expression list
+  | ReadStatement of expression list
+  | PrintStatement of expression list
 
 type typ =
   | Type_Int

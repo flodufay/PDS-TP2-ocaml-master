@@ -57,6 +57,8 @@ and statement = parser
   | [< 'WHILE_KW; e = expression; 'ENDL; 'DO_KW; 'ENDL; s = statement; 'ENDL; 'OD_KW >] -> WhileStatement(e, s)
   | [< 'LC; 'ENDL; p = bloc; 'RC >] -> p
   | [< 'INT_KW; l = list0 expression comma >] -> IntStatement(l)
+  | [< 'READ_KW; l = list0 expression comma >] -> ReadStatement(l)
+  | [< 'PRINT_KW; l = list0 expression comma >] -> PrintStatement(l)
   | [< e1 = expression; s = statement_aux e1 >] -> s
  
  and if_aux e s = parser
