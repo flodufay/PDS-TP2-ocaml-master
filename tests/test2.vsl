@@ -3,5 +3,4 @@ INT d
 IF n
 THEN
 a := n + 2
-}
-DONE
+FI
