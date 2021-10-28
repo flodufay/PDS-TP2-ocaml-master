@@ -1,6 +1,6 @@
-IF n
-THEN
+WHILE n
+DO 
+{
 a := n + 2
-ELSE
-a := n + 3
-FI
+}
+DONE

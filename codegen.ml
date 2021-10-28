@@ -48,7 +48,7 @@ and ir_of_expression : expression -> llvm_ir * llvm_value = function
      let ir = ir1 @@ ir2 @: llvm_div ~res_var:x ~res_type:LLVM_type_i32 ~left:v1 ~right:v2 in
      ir, LLVM_var x
   | IdentExpression s ->
-     empty_ir, LLVM_var ("%" ^ s)
+     empty_ir, LLVM_var ("%v" ^ s)
 
 
 and ir_of_statement : statement -> llvm_ir * llvm_value = function
@@ -82,6 +82,13 @@ and ir_of_statement : statement -> llvm_ir * llvm_value = function
    let x = newtmp() in 
    let tmpThen, tmpElse, tmpFi = newtmp(), newtmp(), newtmp() in
    let  ir = (((((((((((((((((empty_ir @: llvm_cmp x v1) @: llvm_goToIf (LLVM_var x) tmpThen tmpElse) @: "\n" )@: string_of_label tmpThen) @: " : \n") @@ ir2) @: " \n")@: llvm_goToThen tmpFi )@: "\n" )@: string_of_label tmpElse) @: " : \n") @@ ir3) @: " \n")@: llvm_goToThen tmpFi )@: "\n" )@: string_of_label tmpFi )@: " : \n \n") in
+   ir, v2
+   | WhileStatement(e, s) ->
+   let ir1, v1 = ir_of_expression e in
+   let ir2, v2 = ir_of_statement s in
+   let x = newtmp() in 
+   let tmpDo, tmpDone = newtmp(), newtmp() in
+   let  ir = (((((((((((((empty_ir @: llvm_cmp x v1) @: llvm_goToIf (LLVM_var x) tmpDo tmpDone) @: "\n" )@: string_of_label tmpDo) @: " : \n") @@ ir2) @: " \n" )@: llvm_goToIf (LLVM_var x) tmpDo tmpDone) @: "\n" )@: llvm_goToThen tmpDone )@: "\n" )@: string_of_label tmpDone )@: " : \n \n") in
    ir, v2
 
 
