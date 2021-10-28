@@ -56,6 +56,7 @@ and ir_of_statement : statement -> llvm_ir * llvm_value = function
       |IdentExpression(s)::q -> let ir, v = ir_of_statement (IntStatement(q)) in
          ((((empty_ir) @:"%v" ^ s ) @: " = alloca i32 \n" )@@ ir), v
       |[] -> empty_ir, (LLVM_i32 0)
+      |_ -> failwith("déclaration d'un objet qui n'est pas une variable")
    end
 
    | AssignStatement (e1, e2) ->
