@@ -33,7 +33,7 @@ and prettyprint_sta sta ind = match sta with
                              ^ (indentation ind) ^ "DONE\n"
   | IntStatement l -> (indentation ind) ^ "INT " ^ (str_of_li_err l "declaration") ^ "\n"
   | ReadStatement l -> (indentation ind) ^ "READ " ^ (str_of_li_err l "lecture") ^ "\n"
-  | PrintStatement l -> (indentation ind) ^ "PRINT " ^ (List.fold_right (fun e str -> (prettyprint_exp e ^ ", " ^ str)) l "") ^ "\n"
+  | PrintStatement l -> (indentation ind) ^ "PRINT " ^ (List.fold_right (fun expr concat -> (prettyprint_exp expr ^ (if (concat == "") then "" else ", ") ^ concat)) l "") ^ "\n"
 
 and prettyprint_exp exp =
   match exp with

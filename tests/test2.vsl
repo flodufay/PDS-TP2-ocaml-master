@@ -5,5 +5,5 @@ IF b
 THEN
 a := d + 2
 ELSE
-a := c + 2
+PRINT a, 34, a + 34
 FI
