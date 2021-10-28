@@ -33,13 +33,14 @@ let rec list_better p sep = parser
 
 (* TODO : change when you extend the language *)
 let rec program = parser
-  | [< s = list_better statement program_endl >] -> (* print_endline("found program") ; *) ProgramStatement(s)
+  | [< s = list_better statement optional >] -> (* print_endline("found program") ; *) ProgramStatement(s)
 
-and program_endl = parser
+and optional = parser
   | [< 'ENDL >] -> ()
-
+  | [< >] -> ()
+  
 and bloc = parser
-  | [< s = list_better statement program_endl >] -> (* print_endline("found program") ; *) ProgramStatement(s)
+  | [< s = list_better statement optional >] -> (* print_endline("found program") ; *) ProgramStatement(s)
 
 and expression = parser
   | [< e1 = factor; e = expression_aux e1 >] -> (* print_endline("found expression") ; *) e
