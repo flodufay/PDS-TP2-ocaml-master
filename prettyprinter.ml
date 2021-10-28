@@ -19,6 +19,10 @@ and prettyprint_sta sta ind = match sta with
                                     ^ (indentation ind) ^ "ELSE\n"
                                     ^ (prettyprint_sta s2 (ind + 1))
                                     ^ (indentation ind) ^ "FI\n"
+  | WhileStatement (e, s) -> (indentation ind) ^ "WHILE " ^ (prettyprint_exp e) ^ "\n"
+                             ^ (indentation ind) ^ "DO\n"
+                             ^ (prettyprint_sta s (ind + 1))
+                             ^ (indentation ind) ^ "DONE\n"
 
 and prettyprint_exp exp =
   match exp with

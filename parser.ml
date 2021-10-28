@@ -50,6 +50,7 @@ and expression_aux e1 = parser
 
 and statement = parser
   | [< 'IF_KW; e = expression; 'ENDL; 'THEN_KW; 'ENDL; s = statement; 'ENDL; res = if_aux e s >] -> (* print_endline("found If Statement") ; *) res
+  | [< 'WHILE_KW; e = expression; 'ENDL; 'DO_KW; 'ENDL; s = statement; 'ENDL; 'OD_KW >] -> WhileStatement(e, s)
   | [< 'LC; 'ENDL; p = program; 'RC >] -> p
   | [< e1 = expression; s = statement_aux e1 >] -> s
  

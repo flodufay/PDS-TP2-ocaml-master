@@ -61,6 +61,12 @@ rule tokenize = parse
       { ELSE_KW :: tokenize lexbuf }
   | "FI"
       { FI_KW :: tokenize lexbuf }
+  | "WHILE"
+      { WHILE_KW :: tokenize lexbuf }
+  | "DO"
+      { DO_KW :: tokenize lexbuf }
+  | "DONE"
+      { OD_KW :: tokenize lexbuf }
   | "{"
       { LC :: tokenize lexbuf }
   | "}"
