@@ -49,6 +49,8 @@ rule tokenize = parse
   | letter (letter | digit)* as ident
       { IDENT(ident) :: tokenize lexbuf }
 
+  | ","
+      { COM :: tokenize lexbuf }
 
   (* TODO : other keywords *)
 
@@ -71,6 +73,10 @@ rule tokenize = parse
       { LC :: tokenize lexbuf }
   | "}"
       { RC :: tokenize lexbuf }
+
+  | "INT"
+      { INT_KW :: tokenize lexbuf }
+
   | letter (letter | digit)* as lxm
       { IDENT lxm :: tokenize lexbuf }
   | '"' (ascii* as lxm) '"'

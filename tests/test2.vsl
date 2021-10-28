@@ -1,3 +1,5 @@
+INT a, b, c
+INT d
 IF n
 THEN
 a := n + 2

@@ -4,6 +4,14 @@ let rec indentation n = match n with
   | n when n <= 0 -> ""
   | n -> "\t" ^ (indentation (n - 1))
 
+and str_of_li l = match l with
+  | [] -> ""
+  | [x] -> begin match x with
+    | IdentExpression s -> s
+    | _ -> failwith "must declare identifiers"
+    end
+  | t :: q -> (str_of_li [t]) ^ ", " ^ (str_of_li q)
+
 and prettyprint prog = prettyprint_sta prog 1
 
 and prettyprint_sta sta ind = match sta with
@@ -23,6 +31,7 @@ and prettyprint_sta sta ind = match sta with
                              ^ (indentation ind) ^ "DO\n"
                              ^ (prettyprint_sta s (ind + 1))
                              ^ (indentation ind) ^ "DONE\n"
+  | IntStatement l -> (indentation ind) ^ "INT " ^ (str_of_li l) ^ "\n"
 
 and prettyprint_exp exp =
   match exp with
