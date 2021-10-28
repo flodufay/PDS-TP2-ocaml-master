@@ -1,6 +1,4 @@
 IF n
 THEN
 a := n + 2
-ELSE
-c := n
 FI

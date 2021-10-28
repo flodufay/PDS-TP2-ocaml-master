@@ -57,6 +57,8 @@ let rec string_of_type = function
 
 and string_of_var x = x
 
+and string_of_label x = String.sub x 1 (String.length x - 1)
+
 and string_of_value = function
   | LLVM_i32 n -> string_of_int n
   | LLVM_var x -> string_of_var x
@@ -101,6 +103,16 @@ let llvm_assign ~(res_var : llvm_var) ~(right : llvm_value) : llvm_instr =
 
 let llvm_return ~(ret_type : llvm_type) ~(ret_value : llvm_value) : llvm_instr =
   "ret " ^ string_of_type ret_type ^ " " ^ string_of_value ret_value ^ "\n"
+
+let llvm_cmp ~(bool_var : llvm_var) ~(cmp_val : llvm_value) : llvm_instr =
+  string_of_var bool_var ^ " = " ^ "icmp ne i32 " ^ string_of_value cmp_val ^ " , 0 " ^ "\n"
+
+let llvm_goToIf ~(bool_val : llvm_value) ~(then_var : llvm_var) ~(fi_var : llvm_var) : llvm_instr =
+  "br i1 " ^ string_of_value bool_val ^ " , " ^ "label " ^ string_of_var then_var ^ " , label " ^ string_of_var fi_var ^ "\n" 
+
+let llvm_goToThen ~(fi_var : llvm_var) : llvm_instr =
+  "br label " ^ string_of_var fi_var ^ "\n" 
+  
 
 (* defining the 'main' function with ir.body as function body *)
 let llvm_define_main (ir : llvm_ir) : llvm_ir =
