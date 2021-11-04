@@ -102,5 +102,11 @@ and ir_of_statement : statement -> llvm_ir * llvm_value = function
       let  ir = (((((((((((((empty_ir @: llvm_cmp x v1) @: llvm_goToIf (LLVM_var x) tmpDo tmpDone) @: "\n" )@: string_of_label tmpDo) @: " : \n") @@ ir2) @: " \n" )@: llvm_goToIf (LLVM_var x) tmpDo tmpDone) @: "\n" )@: llvm_goToThen tmpDone )@: "\n" )@: string_of_label tmpDone )@: " : \n \n") in
       ir, v2
 
-
+   |ReadStatement(l) -> begin match l with
+      |IdentExpression(s)::q -> let ir, v = ir_of_statement(ReadStatement(q)) in
+         ((empty_ir @: (llvm_read(LLVM_var("%v" ^ s)))) @@ ir), v
+      |[] -> empty_ir, (LLVM_i32 0)
+      |_ -> failwith("read un objet qui n'est pas une variable")
+   end
+   
 (* TODO: complete with new cases and functions when you extend your language *)

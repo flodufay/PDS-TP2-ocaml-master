@@ -27,6 +27,7 @@ type llvm_ir = (* type of generated IR *)
 
  and llvm_instr = string (* type of instructions *)
 
+let fmt1 = "@.fmt1 = global [3 x i8 ] c\"%d\\" ^ "00\" "
 (* empty IR *)
 let empty_ir = {
   header = Empty;
@@ -113,6 +114,9 @@ let llvm_goToIf ~(bool_val : llvm_value) ~(then_var : llvm_var) ~(fi_var : llvm_
 let llvm_goToThen ~(fi_var : llvm_var) : llvm_instr =
   "br label " ^ string_of_var fi_var ^ "\n" 
   
+let llvm_read ~(var : llvm_value) : llvm_instr =
+  "call i32 ( i8 ∗ , . . . ) @scanf ( i8∗ getelementptr inbounds ( [ 3 x i8 ] , [3 x i8 ]∗" ^ fmt1 ^ " ,
+  i64 0 , i64 0) , i32∗ " ^ string_of_value(var) ^ ") \n"
 
 (* defining the 'main' function with ir.body as function body *)
 let llvm_define_main (ir : llvm_ir) : llvm_ir =
