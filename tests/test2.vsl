@@ -1,9 +1,8 @@
-INT a, b, c
-INT d
-READ d
-IF b
-THEN
-a := d + 2
+INT n
+INT p
+n := 0
+IF n THEN
+p := 3 + n
 ELSE
-PRINT a, 34, a + 34
+p := 5
 FI

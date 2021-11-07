@@ -3,7 +3,7 @@ open Llvm
 open Utils
 open SymbolTable
 
-       
+
 (* main function. returns only a string: the generated code *)
 let rec ir_of_ast (prog : program) : llvm_ir = (* TODO: change 'expression' when you extend the language *)
   (* TODO : change when you extend the language *)
@@ -54,7 +54,7 @@ and ir_of_expression : expression -> llvm_ir * llvm_value = function
 and ir_of_statement : statement -> llvm_ir * llvm_value = function
    |IntStatement(l) -> begin match l with
       |IdentExpression(s)::q -> let ir, v = ir_of_statement (IntStatement(q)) in
-         ((((empty_ir) @:"%v" ^ s ) @: " = alloca i32 \n" )@@ ir), v
+         ((((empty_ir) @:"%v" ^ s ) @: " = alloca i32\n" )@@ ir), v
       |[] -> empty_ir, (LLVM_i32 0)
       |_ -> failwith("déclaration d'un objet qui n'est pas une variable")
    end
@@ -63,14 +63,14 @@ and ir_of_statement : statement -> llvm_ir * llvm_value = function
       let ir1, v1 = ir_of_expression e1 in
       let ir2, v2 = ir_of_expression e2 in
       begin
-      match v1 with 
-         | LLVM_i32 x -> failwith "pas content, assignation à un entier" 
+      match v1 with
+         | LLVM_i32 x -> failwith "pas content, assignation à un entier"
          | LLVM_var s ->
-            let ir = ir2 @@ ( ir1 @: llvm_assign ~res_var:s ~right:v2 ) in
+            let ir = ir2 @@ ( ir1 @: llvm_assign ~res_var:s ~res_type:LLVM_type_i32 ~right:v2 ) in
             ir, LLVM_var s
       end
 
-   | ProgramStatement (l) -> let rec program_statement_aux l res var = 
+   | ProgramStatement (l) -> let rec program_statement_aux l res var =
       match l with
          | t::q -> let ir, v = ir_of_statement t in
             program_statement_aux q ( res @@ ir ) v
@@ -80,33 +80,35 @@ and ir_of_statement : statement -> llvm_ir * llvm_value = function
    | IfStatement(e, s) ->
       let ir1, v1 = ir_of_expression e in
       let ir2, v2 = ir_of_statement s in
-      let x = newtmp() in 
+      let x = newtmp() in
       let tmpThen, tmpFi = newtmp(), newtmp() in
-      let  ir = (((((((((((empty_ir @: llvm_cmp x v1) @: llvm_goToIf (LLVM_var x) tmpThen tmpFi) @: "\n" )@: string_of_label tmpThen) @: " : \n") @@ ir2) @: " \n")@: llvm_goToThen tmpFi )@: "\n" )@: string_of_label tmpFi )@: " : \n \n") in
+      let  ir = (((((((((((empty_ir @: llvm_cmp x v1) @: llvm_goToIf (LLVM_var x) tmpThen tmpFi) @: "\n" )@: string_of_label tmpThen) @: ":\n") @@ ir2) @: "\n")@: llvm_goToThen tmpFi )@: "\n" )@: string_of_label tmpFi )@: ":\n\n") in
       ir, v2
 
    | IfElseStatement(e, s1, s2) ->
       let ir1, v1 = ir_of_expression e in
       let ir2, v2 = ir_of_statement s1 in
       let ir3, v3 = ir_of_statement s2 in
-      let x = newtmp() in 
+      let x = newtmp() in
       let tmpThen, tmpElse, tmpFi = newtmp(), newtmp(), newtmp() in
-      let  ir = (((((((((((((((((empty_ir @: llvm_cmp x v1) @: llvm_goToIf (LLVM_var x) tmpThen tmpElse) @: "\n" )@: string_of_label tmpThen) @: " : \n") @@ ir2) @: " \n")@: llvm_goToThen tmpFi )@: "\n" )@: string_of_label tmpElse) @: " : \n") @@ ir3) @: " \n")@: llvm_goToThen tmpFi )@: "\n" )@: string_of_label tmpFi )@: " : \n \n") in
+      let  ir = (((((((((((((((((empty_ir @: llvm_cmp x v1) @: llvm_goToIf (LLVM_var x) tmpThen tmpElse) @: "\n" )@: string_of_label tmpThen) @: ":\n") @@ ir2) @: "\n") @: llvm_goToThen tmpFi )@: "\n" )@: string_of_label tmpElse) @: ":\n") @@ ir3) @: "\n")@: llvm_goToThen tmpFi )@: "\n" )@: string_of_label tmpFi )@: ":\n\n") in
       ir, v2
 
    | WhileStatement(e, s) ->
       let ir1, v1 = ir_of_expression e in
       let ir2, v2 = ir_of_statement s in
-      let x = newtmp() in 
+      let x = newtmp() in
       let tmpDo, tmpDone = newtmp(), newtmp() in
-      let  ir = (((((((((((((empty_ir @: llvm_cmp x v1) @: llvm_goToIf (LLVM_var x) tmpDo tmpDone) @: "\n" )@: string_of_label tmpDo) @: " : \n") @@ ir2) @: " \n" )@: llvm_goToIf (LLVM_var x) tmpDo tmpDone) @: "\n" )@: llvm_goToThen tmpDone )@: "\n" )@: string_of_label tmpDone )@: " : \n \n") in
+      let  ir = (((((((((((((empty_ir @: llvm_cmp x v1) @: llvm_goToIf (LLVM_var x) tmpDo tmpDone) @: "\n" )@: string_of_label tmpDo) @: ":\n") @@ ir2) @: "\n" )@: llvm_goToIf (LLVM_var x) tmpDo tmpDone) @: "\n" )@: llvm_goToThen tmpDone )@: "\n" )@: string_of_label tmpDone )@: ":\n\n") in
       ir, v2
 
-   |ReadStatement(l) -> begin match l with
-      |IdentExpression(s)::q -> let ir, v = ir_of_statement(ReadStatement(q)) in
+   | ReadStatement(l) -> begin match l with
+      | IdentExpression(s)::q -> let ir, v = ir_of_statement(ReadStatement(q)) in
          ((empty_ir @: (llvm_read(LLVM_var("%v" ^ s)))) @@ ir), v
-      |[] -> empty_ir, (LLVM_i32 0)
-      |_ -> failwith("read un objet qui n'est pas une variable")
+      | [] -> empty_ir, (LLVM_i32 0)
+      | _ -> failwith("read un objet qui n'est pas une variable")
    end
-   
+
+   | PrintStatement l -> failwith "not yet implemented"
+
 (* TODO: complete with new cases and functions when you extend your language *)

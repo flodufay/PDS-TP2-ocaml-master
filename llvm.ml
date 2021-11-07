@@ -8,18 +8,18 @@ type llvm_type =
 (* TODO: to complete *)
 
 type llvm_var = string
-    
+
 type llvm_value =
   | LLVM_i32 of int
   | LLVM_var of llvm_var
 (* TODO: to complete? *)
 
-			 
+
 type llvm_ir = (* type of generated IR *)
   { header: llvm_instr_seq; (* instructions to be placed before all code (global definitions) *)
     body: llvm_instr_seq;
   }
-    
+
  and llvm_instr_seq = (* type of sequences of instructions *)
    | Empty
    | Atom of llvm_instr
@@ -33,25 +33,25 @@ let empty_ir = {
   header = Empty;
   body = Empty;
 }
-		 
+
 (* appending an instruction in the header: ir @^ i *)
 let (@^) ir i = {
     header = Concat (ir.header, Atom i);
     body = ir.body;
   }
-		 
+
 (* appending an instruction in the body: ir @: i *)
 let (@:) ir i = {
     header = ir.header;
     body = Concat (ir.body, Atom i);
   }
-		 
+
 (* concatenation of two IRs: ir1 @@ ir2 *)
 let (@@) ir1 ir2 = {
     header = Concat (ir1.header, ir2.header);
     body = Concat (ir1.body, ir2.body);
 }
-		 
+
 (* actual IR generation *)
 let rec string_of_type = function
   | LLVM_type_i32 -> "i32"
@@ -63,7 +63,7 @@ and string_of_label x = String.sub x 1 (String.length x - 1)
 and string_of_value = function
   | LLVM_i32 n -> string_of_int n
   | LLVM_var x -> string_of_var x
-		     
+
 and string_of_ir ir =
   (* this header describe to LLVM the target
    * and declare the external function printf
@@ -84,7 +84,7 @@ and string_of_instr_seq = function
 
 and string_of_instr i = i
 
-			  
+
 (* functions for the creation of various instructions *)
 
 let llvm_add ~(res_var : llvm_var) ~(res_type : llvm_type) ~(left : llvm_value) ~(right : llvm_value) : llvm_instr =
@@ -99,8 +99,14 @@ let llvm_mul ~(res_var : llvm_var) ~(res_type : llvm_type) ~(left : llvm_value) 
 let llvm_div ~(res_var : llvm_var) ~(res_type : llvm_type) ~(left : llvm_value) ~(right : llvm_value) : llvm_instr =
   string_of_var res_var ^ " = udiv " ^ string_of_type res_type ^ " " ^ string_of_value left ^ ", " ^ string_of_value right ^ "\n"
 
-let llvm_assign ~(res_var : llvm_var) ~(right : llvm_value) : llvm_instr =
-  string_of_var res_var ^ " = " ^ string_of_value right ^ "\n"
+let llvm_assign ~(res_var : llvm_var) ~(res_type : llvm_type) ~(right : llvm_value) : llvm_instr =
+  "store " ^ string_of_type res_type ^ " " ^ string_of_value right ^ ", i32* " ^ string_of_var res_var ^ "\n"
+(*
+currently produces (for example)
+  %v = 0
+should produce
+  store i32 0, i32* %v
+*)
 
 let llvm_return ~(ret_type : llvm_type) ~(ret_value : llvm_value) : llvm_instr =
   "ret " ^ string_of_type ret_type ^ " " ^ string_of_value ret_value ^ "\n"
@@ -109,11 +115,11 @@ let llvm_cmp ~(bool_var : llvm_var) ~(cmp_val : llvm_value) : llvm_instr =
   string_of_var bool_var ^ " = " ^ "icmp ne i32 " ^ string_of_value cmp_val ^ " , 0 " ^ "\n"
 
 let llvm_goToIf ~(bool_val : llvm_value) ~(then_var : llvm_var) ~(fi_var : llvm_var) : llvm_instr =
-  "br i1 " ^ string_of_value bool_val ^ " , " ^ "label " ^ string_of_var then_var ^ " , label " ^ string_of_var fi_var ^ "\n" 
+  "br i1 " ^ string_of_value bool_val ^ " , " ^ "label " ^ string_of_var then_var ^ " , label " ^ string_of_var fi_var ^ "\n"
 
 let llvm_goToThen ~(fi_var : llvm_var) : llvm_instr =
-  "br label " ^ string_of_var fi_var ^ "\n" 
-  
+  "br label " ^ string_of_var fi_var ^ "\n"
+
 let llvm_read ~(var : llvm_value) : llvm_instr =
   "call i32 ( i8 ∗ , . . . ) @scanf ( i8∗ getelementptr inbounds ( [ 3 x i8 ] , [3 x i8 ]∗" ^ fmt1 ^ " ,
   i64 0 , i64 0) , i32∗ " ^ string_of_value(var) ^ ") \n"
@@ -123,6 +129,5 @@ let llvm_define_main (ir : llvm_ir) : llvm_ir =
   { header = ir.header;
     body = Atom ("define i32 @main() {\n" ^ string_of_instr_seq ir.body ^ "}\n");
   }
-									 
+
 (* TODO: complete with other LLVM instructions *)
-								
