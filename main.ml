@@ -17,7 +17,7 @@ let _ =
     let ir = Codegen.ir_of_ast ast in
     print_endline (Llvm.string_of_ir ir)
 
-    
+
   with
     Lexer.Unexpected_character e ->
     Printf.printf "Unexpected character: `%c' at position '%d' on line '%d'\n"
