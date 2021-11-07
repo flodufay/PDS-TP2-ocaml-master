@@ -33,14 +33,17 @@ let rec list_better p sep = parser
 
 (* TODO : change when you extend the language *)
 let rec program = parser
-  | [< s = list_better statement optional >] -> (* print_endline("found program") ; *) ProgramStatement(s)
+  | [< s = list_better statement optional_endline; _ = optional_endline >] -> (* print_endline("found program") ; *) ProgramStatement(s)
 
-and optional = parser
+and parse_endline = parser
+  | [< 'ENDL >] -> ()
+
+and optional_endline = parser
   | [< 'ENDL >] -> ()
   | [< >] -> ()
-  
+
 and bloc = parser
-  | [< s = list_better statement optional >] -> (* print_endline("found program") ; *) ProgramStatement(s)
+  | [< s = list_better statement optional_endline; _ = optional_endline >] -> (* print_endline("found program") ; *) ProgramStatement(s)
 
 and expression = parser
   | [< e1 = factor; e = expression_aux e1 >] -> (* print_endline("found expression") ; *) e
@@ -53,17 +56,17 @@ and expression_aux e1 = parser
   | [<>] -> e1
 
 and statement = parser
-  | [< 'IF_KW; e = expression; 'ENDL; 'THEN_KW; 'ENDL; s = statement; 'ENDL; res = if_aux e s >] -> (* print_endline("found If Statement") ; *) res
-  | [< 'WHILE_KW; e = expression; 'ENDL; 'DO_KW; 'ENDL; s = statement; 'ENDL; 'OD_KW >] -> WhileStatement(e, s)
-  | [< 'LC; 'ENDL; p = bloc; 'RC >] -> p
+  | [< 'IF_KW; e = expression; _ = optional_endline; 'THEN_KW; _ = optional_endline; s = statement; _ = optional_endline; res = if_aux e s >] -> (* print_endline("found If Statement") ; *) res
+  | [< 'WHILE_KW; e = expression; _ = optional_endline; 'DO_KW; _ = optional_endline; s = statement; _ = optional_endline; 'OD_KW >] -> WhileStatement(e, s)
+  | [< 'LC; _ = optional_endline; p = bloc; 'RC >] -> p
   | [< 'INT_KW; l = list0 expression comma >] -> IntStatement(l)
   | [< 'READ_KW; l = list0 expression comma >] -> ReadStatement(l)
   | [< 'PRINT_KW; l = list0 expression comma >] -> PrintStatement(l)
   | [< e1 = expression; s = statement_aux e1 >] -> s
- 
+
  and if_aux e s = parser
   | [< 'FI_KW >] -> IfStatement (e, s)
-  | [< 'ELSE_KW; 'ENDL; s2 = statement; 'ENDL; 'FI_KW >] -> IfElseStatement (e, s, s2)
+  | [< 'ELSE_KW; _ = optional_endline; s2 = statement; _ = optional_endline; 'FI_KW >] -> IfElseStatement (e, s, s2)
 
 and statement_aux e1 = parser
   | [< 'ASSIGN; e2 = expression >] -> (* print_endline("assign") ; *) AssignStatement (e1, e2)
