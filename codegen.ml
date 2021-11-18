@@ -66,7 +66,7 @@ and ir_of_statement : statement -> llvm_ir * llvm_value = function
       match v1 with
          | LLVM_i32 x -> failwith "pas content, assignation à un entier"
          | LLVM_var s ->
-            let ir = ir2 @@ ( ir1 @: llvm_assign ~res_var:s ~res_type:LLVM_type_i32 ~right:v2 ) in
+            let ir = ir2 @@ ( ir1 @: llvm_assign ~res_var:s ~res_type:LLVM_type_i32_pointeur ~start_type:LLVM_type_i32 ~right:v2 ) in
             ir, LLVM_var s
       end
 
