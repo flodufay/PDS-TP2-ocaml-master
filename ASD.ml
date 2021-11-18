@@ -1,7 +1,7 @@
 (* TODO : extend when you extend the language *)
 
 type ident = string
-luffkluttf
+
 type expression =
   | AddExpression of expression * expression
   | SubExpression of expression * expression
