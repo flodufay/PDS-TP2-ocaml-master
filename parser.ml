@@ -45,6 +45,22 @@ and optional_endline = parser
 and bloc = parser
   | [< s = list_better statement optional_endline; _ = optional_endline >] -> (* print_endline("found program") ; *) ProgramStatement(s)
 
+and func = parser
+  | [< 'PROTO_KW ; t = typ ; name = expression ; 'LP ; args = list0 expression comma ; 'RP >] -> FunctionPrototype(t, name, args)
+  | [< 'FUNC_KW ; t = typ ; name = expression ; 'LP ; args = list0 expression comma ; 'RP ; ext = function_aux >] -> FunctionDeclaration(t, name, args, ext)
+
+and function_aux = parser
+  | [< 'LC ; r = statement ; 'RC >] -> r
+  | [< r = statement >] -> r
+
+and typ = parser
+  | [< 'VOID_KW >] -> Type_Void
+  | [< 'INT_KW ; t = typ_aux >] -> t
+
+and typ_aux = parser
+  | [< 'LB ; size = expression ; 'RB >] -> Type_Array(size)
+  | [< >] -> Type_Int
+
 and expression = parser
   | [< e1 = factor; e = expression_aux e1 >] -> (* print_endline("found expression") ; *) e
 
@@ -80,6 +96,9 @@ and factor_aux e1 = parser
 and primary = parser
   | [< 'INTEGER x >] -> (* print_endline("found integer " ^ (string_of_int x)) ; *) IntegerExpression x
   | [< 'IDENT s >] -> (* print_endline("found variable " ^ s) ; *) IdentExpression s
+  | [< 'TEXT s >] -> StringExpression(s)
+  (* | [< >] -> FunctionCallExpression(f, args) *)
+
 
 and comma = parser
   | [< 'COM >] -> ()

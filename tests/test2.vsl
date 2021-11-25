@@ -1,8 +1,2 @@
-INT n
-INT p
-n := 0
-IF n THEN
-p := 3 + n
-ELSE
-p := 5
-FI
+INT t[11]
+PRINT t
