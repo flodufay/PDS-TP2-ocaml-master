@@ -1,3 +1,4 @@
+open Utils
 (* TODO : extend when you extend the language *)
 
 (* This file contains a simple LLVM IR representation *)
@@ -5,6 +6,7 @@
 
 type llvm_type =
   | LLVM_type_i32
+  | LLVM_type_i32_pointeur
 (* TODO: to complete *)
 
 type llvm_var = string
@@ -55,6 +57,7 @@ let (@@) ir1 ir2 = {
 (* actual IR generation *)
 let rec string_of_type = function
   | LLVM_type_i32 -> "i32"
+  | LLVM_type_i32_pointeur -> "i32*"
 
 and string_of_var x = x
 
@@ -86,21 +89,34 @@ and string_of_instr i = i
 
 
 (* functions for the creation of various instructions *)
+let llvm_load ~(var : llvm_value) : llvm_value * llvm_instr =
+  match var with
+    |LLVM_var y -> let x = LLVM_var (newtmp ()) in
+      (x,string_of_value x ^ " = load i32, i32* " ^ string_of_value var ^ "\n")
+    |_ -> (var,"")
 
 let llvm_add ~(res_var : llvm_var) ~(res_type : llvm_type) ~(left : llvm_value) ~(right : llvm_value) : llvm_instr =
-  string_of_var res_var ^ " = add " ^ string_of_type res_type ^ " " ^ string_of_value left ^ ", " ^ string_of_value right ^ "\n"
+  let v1,s1 = llvm_load ~var:left in 
+  let v2,s2 = llvm_load ~var:right in
+  s1 ^ s2 ^ string_of_var res_var ^ " = add " ^ string_of_type res_type ^ " " ^ string_of_value v1 ^ ", " ^ string_of_value v2 ^ "\n"
 
 let llvm_minus ~(res_var : llvm_var) ~(res_type : llvm_type) ~(left : llvm_value) ~(right : llvm_value) : llvm_instr =
-  string_of_var res_var ^ " = sub " ^ string_of_type res_type ^ " " ^ string_of_value left ^ ", " ^ string_of_value right ^ "\n"
+  let v1,s1 = llvm_load ~var:left in 
+  let v2,s2 = llvm_load ~var:right in
+  s1 ^ s2 ^ string_of_var res_var ^ " = sub " ^ string_of_type res_type ^ " " ^ string_of_value v1 ^ ", " ^ string_of_value v2 ^ "\n"
 
 let llvm_mul ~(res_var : llvm_var) ~(res_type : llvm_type) ~(left : llvm_value) ~(right : llvm_value) : llvm_instr =
-  string_of_var res_var ^ " = mul " ^ string_of_type res_type ^ " " ^ string_of_value left ^ ", " ^ string_of_value right ^ "\n"
+  let v1,s1 = llvm_load ~var:left in 
+  let v2,s2 = llvm_load ~var:right in
+  s1 ^ s2 ^ string_of_var res_var ^ " = mul " ^ string_of_type res_type ^ " " ^ string_of_value v1 ^ ", " ^ string_of_value v2 ^ "\n"
 
 let llvm_div ~(res_var : llvm_var) ~(res_type : llvm_type) ~(left : llvm_value) ~(right : llvm_value) : llvm_instr =
-  string_of_var res_var ^ " = udiv " ^ string_of_type res_type ^ " " ^ string_of_value left ^ ", " ^ string_of_value right ^ "\n"
+  let v1,s1 = llvm_load ~var:left in 
+  let v2,s2 = llvm_load ~var:right in
+  s1 ^ s2 ^ string_of_var res_var ^ " = udiv " ^ string_of_type res_type ^ " " ^ string_of_value v1 ^ ", " ^ string_of_value v2 ^ "\n"
 
-let llvm_assign ~(res_var : llvm_var) ~(res_type : llvm_type) ~(right : llvm_value) : llvm_instr =
-  "store " ^ string_of_type res_type ^ " " ^ string_of_value right ^ ", i32* " ^ string_of_var res_var ^ "\n"
+let llvm_assign ~(res_var : llvm_var) ~(res_type : llvm_type) ~(start_type : llvm_type) ~(right : llvm_value) : llvm_instr =
+  "store " ^ string_of_type start_type ^ " " ^ string_of_value right ^ ", " ^ string_of_type res_type ^ " " ^ string_of_var res_var ^ "\n"
 (*
 currently produces (for example)
   %v = 0
@@ -109,10 +125,12 @@ should produce
 *)
 
 let llvm_return ~(ret_type : llvm_type) ~(ret_value : llvm_value) : llvm_instr =
-  "ret " ^ string_of_type ret_type ^ " " ^ string_of_value ret_value ^ "\n"
+  let v,s = llvm_load ~var:ret_value in 
+  s ^ "ret " ^ string_of_type ret_type ^ " " ^ string_of_value v ^ "\n"
 
 let llvm_cmp ~(bool_var : llvm_var) ~(cmp_val : llvm_value) : llvm_instr =
-  string_of_var bool_var ^ " = " ^ "icmp ne i32 " ^ string_of_value cmp_val ^ " , 0 " ^ "\n"
+  let v,s = llvm_load ~var:cmp_val in 
+  s ^ string_of_var bool_var ^ " = " ^ "icmp ne i32 " ^ string_of_value v ^ " , 0 " ^ "\n"
 
 let llvm_goToIf ~(bool_val : llvm_value) ~(then_var : llvm_var) ~(fi_var : llvm_var) : llvm_instr =
   "br i1 " ^ string_of_value bool_val ^ " , " ^ "label " ^ string_of_var then_var ^ " , label " ^ string_of_var fi_var ^ "\n"
