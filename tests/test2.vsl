@@ -1,2 +1,3 @@
-INT t[11]
-PRINT t
+INT i
+i := 2
+PRINT "hello", i

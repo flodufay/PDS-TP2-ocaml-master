@@ -29,7 +29,8 @@ type llvm_ir = (* type of generated IR *)
 
  and llvm_instr = string (* type of instructions *)
 
-let fmt1 = "@.fmt1 = global [3 x i8 ] c\"%d\\" ^ "00\" "
+let fmtRead = "@.fmtRead = global [3 x i8 ] c\"%d\\" ^ "00\" "
+let fmtIdent = "@.fmtIdent = global [3 x i8 ] c\"%d\\00\""
 (* empty IR *)
 let empty_ir = {
   header = Empty;
@@ -77,7 +78,7 @@ and string_of_ir ir =
   ^ "declare i32 @printf(i8* noalias nocapture, ...)\n"
   ^ "\n; Actual code begins\n"
   ^ string_of_instr_seq ir.header
-  ^ "\n\n"
+  ^ fmtRead ^ "\n" ^ fmtIdent ^ "\n\n"
   ^ string_of_instr_seq ir.body
 
 and string_of_instr_seq = function
@@ -139,8 +140,21 @@ let llvm_goToThen ~(fi_var : llvm_var) : llvm_instr =
   "br label " ^ string_of_var fi_var ^ "\n"
 
 let llvm_read ~(var : llvm_value) : llvm_instr =
-  "call i32 ( i8 ∗ , . . . ) @scanf ( i8∗ getelementptr inbounds ( [ 3 x i8 ] , [3 x i8 ]∗" ^ fmt1 ^ " ,
-  i64 0 , i64 0) , i32∗ " ^ string_of_value(var) ^ ") \n"
+  "call i32 (i8* , ...) @scanf ( i8* getelementptr inbounds ([3 x i8 ] , [3 x i8 ]*" ^ "@.fmtRead" ^ " ,
+  i64 0 , i64 0) , i32* " ^ string_of_value(var) ^ ") \n"
+
+let llvm_print ~(var : string) : llvm_ir =
+  let res, len = string_transform var in
+  let fmt = newglob "print" in
+  let fmt2 =  fmt ^ " = global [" ^ string_of_int len ^ " x i8 ] c\"" ^ res ^ "\"" in
+  let body = "call i32 (i8*, ...) @printf ( i8* getelementptr inbounds ([" ^ string_of_int (len) ^ " x i8 ] , [" ^ string_of_int (len) ^ " x i8 ]* " ^ fmt ^ " ,
+  i64 0 , i64 0) ) \n" in
+  {header = Atom fmt2 ; body = Atom body}
+
+let llvm_print_ident ~(var : llvm_value) : llvm_instr =
+  let v1,s1 = llvm_load ~var:var in 
+  s1 ^ "call i32 (i8*, ...) @printf ( i8* getelementptr inbounds ([3 x i8 ] , [3 x i8 ]* " ^ "@.fmtIdent" ^ " ,
+  i64 0 , i64 0), i32 " ^ string_of_value v1 ^ " ) \n"
 
 (* defining the 'main' function with ir.body as function body *)
 let llvm_define_main (ir : llvm_ir) : llvm_ir =
