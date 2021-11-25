@@ -9,7 +9,9 @@ type expression =
   | MulExpression of expression * expression
   | IntegerExpression of int
   | IdentExpression of string
-  
+  | StringExpression of string
+  | FunctionCallExpression of expression * expression list
+
 type statement =
   | AssignStatement of expression * expression
   | ProgramStatement of statement list
@@ -22,5 +24,11 @@ type statement =
 
 type typ =
   | Type_Int
+  | Type_Array of expression
+  | Type_Void
+
+type func =
+  | FunctionPrototype of typ * expression * expression list
+  | FunctionDeclaration of typ * expression * expression list * statement
 
 type program = statement
