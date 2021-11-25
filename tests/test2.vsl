@@ -1,3 +1,3 @@
 INT i
-i := 2
-PRINT "hello", i
+READ i
+PRINT i
