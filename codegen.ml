@@ -49,12 +49,16 @@ and ir_of_expression : expression -> llvm_ir * llvm_value = function
      ir, LLVM_var x
   | IdentExpression s ->
      empty_ir, LLVM_var ("%v" ^ s)
+  | TabptrExpression (s, i) ->
+     empty_ir, LLVM_tab_var ("%v" ^ s, i)
 
 
 and ir_of_statement : statement -> llvm_ir * llvm_value = function
    |IntStatement(l) -> begin match l with
       |IdentExpression(s)::q -> let ir, v = ir_of_statement (IntStatement(q)) in
-         ((((empty_ir) @:"%v" ^ s ) @: " = alloca i32\n" )@@ ir), v
+   ((((empty_ir) @:"%v" ^ s ) @: " = alloca i32\n" )@@ ir), v
+      |TabptrExpression(s, i)::q -> let ir, v = ir_of_statement (IntStatement(q)) in
+   ((((empty_ir) @:"%v" ^ s ) @: " = alloca [" ^ string_of_int i " x i32]\n" )@@ ir), v
       |[] -> empty_ir, (LLVM_i32 0)
       |_ -> failwith("déclaration d'un objet qui n'est pas une variable")
    end

@@ -14,6 +14,7 @@ type llvm_var = string
 type llvm_value =
   | LLVM_i32 of int
   | LLVM_var of llvm_var
+  | LLVM_tab_var of llvm_var * int
 (* TODO: to complete? *)
 
 
@@ -67,6 +68,7 @@ and string_of_label x = String.sub x 1 (String.length x - 1)
 and string_of_value = function
   | LLVM_i32 n -> string_of_int n
   | LLVM_var x -> string_of_var x
+  | _ -> string_of_var  "essaye d'écrire t[i]"
 
 and string_of_ir ir =
   (* this header describe to LLVM the target
@@ -95,6 +97,7 @@ let llvm_load ~(var : llvm_value) : llvm_value * llvm_instr =
   match var with
     |LLVM_var y -> let x = LLVM_var (newtmp ()) in
       (x,string_of_value x ^ " = load i32, i32* " ^ string_of_value var ^ "\n")
+    |LLVM_tab_var y, i ->
     |_ -> (var,"")
 
 let llvm_add ~(res_var : llvm_var) ~(res_type : llvm_type) ~(left : llvm_value) ~(right : llvm_value) : llvm_instr =
@@ -117,9 +120,11 @@ let llvm_div ~(res_var : llvm_var) ~(res_type : llvm_type) ~(left : llvm_value) 
   let v2,s2 = llvm_load ~var:right in
   s1 ^ s2 ^ string_of_var res_var ^ " = udiv " ^ string_of_type res_type ^ " " ^ string_of_value v1 ^ ", " ^ string_of_value v2 ^ "\n"
 
-let llvm_assign ~(res_var : llvm_var) ~(res_type : llvm_type) ~(start_type : llvm_type) ~(right : llvm_value) : llvm_instr =
-  "store " ^ string_of_type start_type ^ " " ^ string_of_value right ^ ", " ^ string_of_type res_type ^ " " ^ string_of_var res_var ^ "\n"
-(*
+let llvm_assign ~(res_var : llvm_val) ~(res_type : llvm_type) ~(start_type : llvm_type) ~(right : llvm_value) : llvm_instr =
+  match res_var with
+  |llvm_var x -> "store " ^ string_of_type start_type ^ " " ^ string_of_value right ^ ", " ^ string_of_type res_type ^ " " ^ string_of_var res_var ^ "\n"
+  |llvm_tab_var x i ->
+  (*
 currently produces (for example)
   %v = 0
 should produce

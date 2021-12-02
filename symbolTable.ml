@@ -36,5 +36,10 @@ let lookup tab id =
 
 let add tab sym = sym :: tab
 
+let lookup_type tab id =
+  match lookup tab id with
+  | Some(VariableSymbol(typ, _)) -> typ
+  | _ -> failwith("regarde le type d'un objet qui n'est pas un symbole ")
+
 (* Note : obviously not symmetric *)
 let merge = (@)
