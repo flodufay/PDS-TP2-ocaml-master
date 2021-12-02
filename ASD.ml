@@ -23,10 +23,9 @@ type statement =
   | ReadStatement of expression list
   | PrintStatement of expression list
 
-(* type typ =
+type typ =
   | Type_Int
-  | Type_Array of expression
-  | Type_Void *)
+  | Type_Array of int
 
 (* type func =
   | FunctionPrototype of typ * expression * expression list

@@ -44,6 +44,7 @@ and prettyprint_exp exp =
   | DivExpression (l, r) -> "(" ^ (prettyprint_exp l) ^ " / " ^ (prettyprint_exp r) ^ ")"
   | IntegerExpression i -> string_of_int i
   | StringExpression s -> "\"" ^ s ^ "\""
+  | TabptrExpression (s, x) -> s ^ "[" ^ (string_of_int x) ^ "]"
   | IdentExpression s -> s
 
 (* TODO : extend when you extend the language *)

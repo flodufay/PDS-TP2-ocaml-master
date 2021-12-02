@@ -93,6 +93,7 @@ and factor = parser
 and factor_aux e1 = parser
   | [< 'LB ; 'INTEGER x ; 'RB >] -> begin match e1 with
       | IdentExpression s -> TabptrExpression (s, x)
+      | _ -> failwith "Parsing Error when parsing subscripting to a non-identifier"
   end
   | [< >] -> e1
 
