@@ -76,6 +76,7 @@ and string_of_ir ir =
   ^ "target triple = \"x86_64-unknown-linux-gnu\"\n"
   ^ "; External declaration of the printf function\n"
   ^ "declare i32 @printf(i8* noalias nocapture, ...)\n"
+  ^ "declare i32 @scanf(i8* noalias nocapture, ...)\n"
   ^ "\n; Actual code begins\n"
   ^ string_of_instr_seq ir.header
   ^ fmtRead ^ "\n" ^ fmtIdent ^ "\n\n"

@@ -120,6 +120,4 @@ and ir_of_statement : statement -> llvm_ir * llvm_value = function
       | _ -> failwith("print un objet qui n'est pas une string")
    end
 
-   | PrintStatement l -> failwith "not yet implemented"
-
 (* TODO: complete with new cases and functions when you extend your language *)

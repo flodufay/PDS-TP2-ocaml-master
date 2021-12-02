@@ -1,14 +1,26 @@
+entrée :
+
+INT n
+INT p
+n := 0
+IF n THEN
+p := 3 + n
+FI
+
+
+sortie :
+
 define i32 @main() {
 %vn = alloca i32
 %vp = alloca i32
 store i32 0, i32* %vn
-%tmp2 = icmp ne i32 %vn , 0 <---> | %tmpX0 = load i32, i32* %vn
-                                  | %tmp2 = icmp ne i32 %tmpX0 , 0
+%tmp2 = icmp ne i32 %vn , 0 <---> | %tmpNumeroQuiVaBien_0 = load i32, i32* %vn
+                                  | %tmp2 = icmp ne i32 %tmpNumeroQuiVaBien_0 , 0
 br i1 %tmp2 , label %tmp5 , label %tmp4
 
 tmp5:
-%tmp1 = add i32 3, %vn <--------> | %tmpX1 = load i32, i32* %vn
-                                  | %tmp1 = add i32 3, %tmpX1
+%tmp1 = add i32 3, %vn <--------> | %tmpNumeroQuiVaBien_1 = load i32, i32* %vn
+                                  | %tmp1 = add i32 3, %tmpNumeroQuiVaBien_1
 store i32 %tmp1, i32* %vp
 br label %tmp3
 
@@ -17,19 +29,11 @@ store i32 5, i32* %vp
 br label %tmp3
 
 tmp3:
-ret i32 %vp <-------------------> | %tmpX2 = load i32, i32* %vp
-                                  | ret i32 %tmpX2
+ret i32 %vp <-------------------> | %tmpNumeroQuiVaBien_2 = load i32, i32* %vp
+                                  | ret i32 %tmpNumeroQuiVaBien_2
 }
 
-(
-l'entrée :
-INT n
-INT p
-n := 0
-IF n THEN
-p := 3 + n
-FI
-)
+TODO :
 
 - [x] espace après les noms de label
 - [x] store pour les assignements de variables allouées
