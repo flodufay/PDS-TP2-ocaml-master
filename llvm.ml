@@ -97,26 +97,32 @@ let llvm_load ~(var : llvm_value) : llvm_value * llvm_instr =
   match var with
     |LLVM_var y -> let x = LLVM_var (newtmp ()) in
       (x,string_of_value x ^ " = load i32, i32* " ^ string_of_value var ^ "\n")
-    |LLVM_tab_var y, i ->
+    |LLVM_tab_var y, i -> begin
+        let v1, s1 = llvm_load ~var:i in
+        let size = lookup_size y in
+        let x1 = newtmp() in
+        let x2 = newtmp() in
+        (x2, s1 ^ (string_of_var x1) ^ " = getelementptr ["^ (string_of_int size) ^" x i32], ["^ (string_of_int size) ^" x i32]* " ^ (string_of_value y) ^ ", i64 0, i32 " ^ (string_of_value v1) ^ "\n" ^ (string_of_var x2) ^ " = load i32, i32* " (string_of_value x1) "\n")
+    end
     |_ -> (var,"")
 
 let llvm_add ~(res_var : llvm_var) ~(res_type : llvm_type) ~(left : llvm_value) ~(right : llvm_value) : llvm_instr =
-  let v1,s1 = llvm_load ~var:left in 
+  let v1,s1 = llvm_load ~var:left in
   let v2,s2 = llvm_load ~var:right in
   s1 ^ s2 ^ string_of_var res_var ^ " = add " ^ string_of_type res_type ^ " " ^ string_of_value v1 ^ ", " ^ string_of_value v2 ^ "\n"
 
 let llvm_minus ~(res_var : llvm_var) ~(res_type : llvm_type) ~(left : llvm_value) ~(right : llvm_value) : llvm_instr =
-  let v1,s1 = llvm_load ~var:left in 
+  let v1,s1 = llvm_load ~var:left in
   let v2,s2 = llvm_load ~var:right in
   s1 ^ s2 ^ string_of_var res_var ^ " = sub " ^ string_of_type res_type ^ " " ^ string_of_value v1 ^ ", " ^ string_of_value v2 ^ "\n"
 
 let llvm_mul ~(res_var : llvm_var) ~(res_type : llvm_type) ~(left : llvm_value) ~(right : llvm_value) : llvm_instr =
-  let v1,s1 = llvm_load ~var:left in 
+  let v1,s1 = llvm_load ~var:left in
   let v2,s2 = llvm_load ~var:right in
   s1 ^ s2 ^ string_of_var res_var ^ " = mul " ^ string_of_type res_type ^ " " ^ string_of_value v1 ^ ", " ^ string_of_value v2 ^ "\n"
 
 let llvm_div ~(res_var : llvm_var) ~(res_type : llvm_type) ~(left : llvm_value) ~(right : llvm_value) : llvm_instr =
-  let v1,s1 = llvm_load ~var:left in 
+  let v1,s1 = llvm_load ~var:left in
   let v2,s2 = llvm_load ~var:right in
   s1 ^ s2 ^ string_of_var res_var ^ " = udiv " ^ string_of_type res_type ^ " " ^ string_of_value v1 ^ ", " ^ string_of_value v2 ^ "\n"
 
@@ -132,11 +138,11 @@ should produce
 *)
 
 let llvm_return ~(ret_type : llvm_type) ~(ret_value : llvm_value) : llvm_instr =
-  let v,s = llvm_load ~var:ret_value in 
+  let v,s = llvm_load ~var:ret_value in
   s ^ "ret " ^ string_of_type ret_type ^ " " ^ string_of_value v ^ "\n"
 
 let llvm_cmp ~(bool_var : llvm_var) ~(cmp_val : llvm_value) : llvm_instr =
-  let v,s = llvm_load ~var:cmp_val in 
+  let v,s = llvm_load ~var:cmp_val in
   s ^ string_of_var bool_var ^ " = " ^ "icmp ne i32 " ^ string_of_value v ^ " , 0 " ^ "\n"
 
 let llvm_goToIf ~(bool_val : llvm_value) ~(then_var : llvm_var) ~(fi_var : llvm_var) : llvm_instr =
@@ -158,7 +164,7 @@ let llvm_print ~(var : string) : llvm_ir =
   {header = Atom fmt2 ; body = Atom body}
 
 let llvm_print_ident ~(var : llvm_value) : llvm_instr =
-  let v1,s1 = llvm_load ~var:var in 
+  let v1,s1 = llvm_load ~var:var in
   s1 ^ "call i32 (i8*, ...) @printf ( i8* getelementptr inbounds ([3 x i8 ] , [3 x i8 ]* " ^ "@.fmtIdent" ^ " ,
   i64 0 , i64 0), i32 " ^ string_of_value v1 ^ " ) \n"
 

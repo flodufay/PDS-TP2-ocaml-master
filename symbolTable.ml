@@ -36,9 +36,13 @@ let lookup tab id =
 
 let add tab sym = sym :: tab
 
-let lookup_type tab id =
+let lookup_size tab id =
   match lookup tab id with
-  | Some(VariableSymbol(typ, _)) -> typ
+  | Some(VariableSymbol(ty, _)) -> begin
+      match ty with
+      | Type_Int -> failwith "regarde la taille d'un entier"
+      | Type_Array x -> x
+  end
   | _ -> failwith("regarde le type d'un objet qui n'est pas un symbole ")
 
 (* Note : obviously not symmetric *)
