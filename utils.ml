@@ -1,3 +1,5 @@
+open SymbolTable 
+
 let tmp = ref 0
 let lab = ref 0
 let glob = ref 0
