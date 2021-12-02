@@ -73,6 +73,19 @@ rule tokenize = parse
       { LC :: tokenize lexbuf }
   | "}"
       { RC :: tokenize lexbuf }
+  | "["
+      { LB :: tokenize lexbuf }
+  | "]"
+      { RB :: tokenize lexbuf }
+
+  (* | "PROTO"
+      { PROTO_KW :: tokenize lexbuf }
+  | "VOID"
+      { VOID_KW :: tokenize lexbuf }
+  | "FUNC"
+      { FUNC_KW :: tokenize lexbuf }
+  | "RETURN"
+      { RETURN_KW :: tokenize lexbuf } *)
 
   | "INT"
       { INT_KW :: tokenize lexbuf }

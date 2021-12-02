@@ -1,3 +1,4 @@
-INT i
-READ i
-PRINT i
+INT t[5]
+INT a
+a := t[3] + 1
+a := 5[6]

@@ -1,6 +1,6 @@
 # TP2 PDS, version OCaml
 
-Ceci est notre (Hugo Boulier et Florent Dufay) TP2 de PDS, avec quelques remarques sur nos choix d'implémentations, et l'état actuel du projet.
+Ceci est notre (Hugo Boulier et Florent Dufay) TP2 de PDS, avec quelques remarques sur nos choix d'implémentations et sur l'état actuel du projet.
 
 - [x] Expressions simples
     - Elles ne respectent pas encore les priorités opératoires usuelles, elles sont pour le moment juste évaluées de gauche à droite.

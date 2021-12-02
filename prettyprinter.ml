@@ -8,6 +8,7 @@ and str_of_li_err l err = match l with
   | [] -> ""
   | [x] -> begin match x with
     | IdentExpression s -> s
+    | TabptrExpression (s, x) -> s ^ "[" ^ (string_of_int x) ^ "]"
     | _ -> failwith err ^ " d'un objet qui n'est pas une variable"
     end
   | t :: q -> (str_of_li_err [t] err) ^ ", " ^ (str_of_li_err q err)
@@ -42,6 +43,8 @@ and prettyprint_exp exp =
   | MulExpression (l, r) -> "(" ^ (prettyprint_exp l) ^ " * " ^ (prettyprint_exp r) ^ ")"
   | DivExpression (l, r) -> "(" ^ (prettyprint_exp l) ^ " / " ^ (prettyprint_exp r) ^ ")"
   | IntegerExpression i -> string_of_int i
+  | StringExpression s -> "\"" ^ s ^ "\""
+  | TabptrExpression (s, x) -> s ^ "[" ^ (string_of_int x) ^ "]"
   | IdentExpression s -> s
 
 (* TODO : extend when you extend the language *)
