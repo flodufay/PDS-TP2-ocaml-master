@@ -14,7 +14,7 @@ type llvm_var = string
 type llvm_value =
   | LLVM_i32 of int
   | LLVM_var of llvm_var
-  | LLVM_tab_var of llvm_var * int
+  | LLVM_tab_var of llvm_var * llvm_value
 (* TODO: to complete? *)
 
 
@@ -68,7 +68,7 @@ and string_of_label x = String.sub x 1 (String.length x - 1)
 and string_of_value = function
   | LLVM_i32 n -> string_of_int n
   | LLVM_var x -> string_of_var x
-  | _ -> string_of_var  "essaye d'écrire t[i]"
+  | LLVM_tab_var (x, i) -> string_of_var  "essaye d'écrire t[i]"
 
 and string_of_ir ir =
   (* this header describe to LLVM the target
@@ -98,7 +98,7 @@ let llvm_load ~(var : llvm_value) : llvm_value * llvm_instr =
     |LLVM_var y -> let x = LLVM_var (newtmp ()) in
       (x,string_of_value x ^ " = load i32, i32* " ^ string_of_value var ^ "\n")
     |LLVM_tab_var y, i ->
-    |_ -> (var,"")
+    | -> (var,"")
 
 let llvm_add ~(res_var : llvm_var) ~(res_type : llvm_type) ~(left : llvm_value) ~(right : llvm_value) : llvm_instr =
   let v1,s1 = llvm_load ~var:left in 
@@ -121,9 +121,14 @@ let llvm_div ~(res_var : llvm_var) ~(res_type : llvm_type) ~(left : llvm_value) 
   s1 ^ s2 ^ string_of_var res_var ^ " = udiv " ^ string_of_type res_type ^ " " ^ string_of_value v1 ^ ", " ^ string_of_value v2 ^ "\n"
 
 let llvm_assign ~(res_var : llvm_val) ~(res_type : llvm_type) ~(start_type : llvm_type) ~(right : llvm_value) : llvm_instr =
+  let r_v, r_s = llvm_load right in
   match res_var with
-  |llvm_var x -> "store " ^ string_of_type start_type ^ " " ^ string_of_value right ^ ", " ^ string_of_type res_type ^ " " ^ string_of_var res_var ^ "\n"
-  |llvm_tab_var x i ->
+  |llvm_var x -> "store " ^ string_of_type start_type ^ " " ^ r_v ^ ", " ^ string_of_type res_type ^ " " ^ string_of_var res_var ^ "\n"
+  |llvm_tab_var x i ->   let v, s = llvm_load ~var:i in 
+  let size = lookup_size sym_tab x in
+  let ptr = newtmp() in
+  ptr ^ " = getelementptr [" ^ string_of_int size ^ " x i32 ] , [" ^ string_of_int size ^ " x i32 ]∗ " ^ x ^ ", i64 0 , i32" ^ v ^ "\n" ^
+  "store " ^ string_of_type start_type ^ " " ^ r_v ^ ", " ^ string_of_type res_type ^ " " ^ ptr ^ "\n"
   (*
 currently produces (for example)
   %v = 0
