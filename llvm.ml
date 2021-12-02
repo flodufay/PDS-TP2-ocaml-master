@@ -130,12 +130,22 @@ let llvm_div ~(res_var : llvm_var) ~(res_type : llvm_type) ~(left : llvm_value) 
 let llvm_assign ~(res_var : llvm_value) ~(res_type : llvm_type) ~(start_type : llvm_type) ~(right : llvm_value) : llvm_instr =
   let r_v, r_s = llvm_load right in
   match res_var with
+<<<<<<< HEAD
   |LLVM_var x -> "store " ^ string_of_type start_type ^ " " ^ string_of_value r_v ^ ", " ^ string_of_type res_type ^ " " ^ string_of_var x ^ "\n"
   |LLVM_tab_var (x, i) ->   let v, s = llvm_load ~var:i in
   let size = lookup_size !sym_tab x in
   let ptr = newtmp() in
   ptr ^ " = getelementptr [" ^ string_of_int size ^ " x i32 ] , [" ^ string_of_int size ^ " x i32 ]∗ " ^ x ^ ", i64 0 , i32" ^ v ^ "\n" ^
   "store " ^ string_of_type start_type ^ " " ^ string_of_value r_v ^ ", " ^ string_of_type res_type ^ " " ^ ptr ^ "\n"
+=======
+  | LLVM_i32 x -> failwith "assignation à un entier"
+  | LLVM_var x -> "store " ^ string_of_type start_type ^ " " ^ (string_of_value r_v) ^ ", " ^ string_of_type res_type ^ " " ^ (string_of_var x) ^ "\n"
+  | LLVM_tab_var (x, i) ->   let v, s = llvm_load ~var:i in
+  let size = lookup_size sym_tab x in
+  let ptr = newtmp() in
+  ptr ^ " = getelementptr [" ^ string_of_int size ^ " x i32 ] , [" ^ string_of_int size ^ " x i32 ]∗ " ^ x ^ ", i64 0 , i32" ^ (string_of_value v) ^ "\n" ^
+  "store " ^ string_of_type start_type ^ " " ^ (string_of_value r_v) ^ ", " ^ string_of_type res_type ^ " " ^ ptr ^ "\n"
+>>>>>>> 285a0f2f589a7a5176403d9e2cb3498c6a1c1e23
   (*
 currently produces (for example)
   %v = 0

@@ -50,7 +50,7 @@ and ir_of_expression : expression -> llvm_ir * llvm_value = function
   | IdentExpression s ->
      empty_ir, LLVM_var ("%v" ^ s)
   | TabptrExpression (s, i) ->
-     empty_ir, LLVM_tab_var ("%v" ^ s, i)
+     empty_ir, LLVM_tab_var ("%v" ^ s, LLVM_i32 i)
 
 
 and ir_of_statement : statement -> llvm_ir * llvm_value = function
@@ -67,13 +67,8 @@ and ir_of_statement : statement -> llvm_ir * llvm_value = function
    | AssignStatement (e1, e2) ->
       let ir1, v1 = ir_of_expression e1 in
       let ir2, v2 = ir_of_expression e2 in
-      begin
-      match v1 with
-         | LLVM_i32 x -> failwith "pas content, assignation à un entier"
-         | LLVM_var s ->
-            let ir = ir2 @@ ( ir1 @: llvm_assign ~res_var:s ~res_type:LLVM_type_i32_pointeur ~start_type:LLVM_type_i32 ~right:v2 ) in
-            ir, LLVM_var s
-      end
+      let ir = ir2 @@ ( ir1 @: llvm_assign ~res_var:v1 ~res_type:LLVM_type_i32_pointeur ~start_type:LLVM_type_i32 ~right:v2 ) in
+      ir, v1
 
    | ProgramStatement (l) -> let rec program_statement_aux l res var =
       match l with

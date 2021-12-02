@@ -36,7 +36,7 @@ let lookup tab id =
 
 let add tab sym = sym :: tab
 
-let lookup_size tab id  : int =
+let lookup_size tab id : int =
   match lookup tab id with
   | Some(VariableSymbol(ty, _)) -> begin
       match ty with
