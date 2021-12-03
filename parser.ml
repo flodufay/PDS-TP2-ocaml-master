@@ -28,12 +28,12 @@ let list0 p sep = parser
   | [<>] -> []
 
 let rec list_better p sep = parser
-  | [< x = p; _ = sep; l = list_better p sep >] -> x :: l
+  | [< x = p; _ = many sep; l = list_better p sep >] -> x :: l
   | [< >] -> []
 
 (* TODO : change when you extend the language *)
 let rec program = parser
-  | [< s = list_better statement optional_endline; _ = optional_endline >] -> (* print_endline("found program") ; *) ProgramStatement(s)
+  | [< s = list_better statement parse_endline; _ = optional_endline >] -> (* print_endline("found program") ; *) ProgramStatement(s)
 
 and parse_endline = parser
   | [< 'ENDL >] -> ()
