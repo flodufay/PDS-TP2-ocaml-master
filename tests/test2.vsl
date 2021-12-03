@@ -2,5 +2,5 @@ INT var, t[8]
 var := 3
 t[1] := 4
 var := t[1]
-t[2] := var
+t[2] := var + 1
 PRINT var, t[1], t[2]

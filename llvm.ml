@@ -96,14 +96,21 @@ and string_of_instr i = i
 (* functions for the creation of various instructions *)
 let rec llvm_load ~(var : llvm_value) : llvm_value * llvm_instr =
   match var with
-    |LLVM_var y -> let x = LLVM_var (newtmp ()) in
-      (x,string_of_value x ^ " = load i32, i32* " ^ string_of_value var ^ "\n")
+    |LLVM_var y -> begin
+        match lookup_etoile !sym_tab y with
+        | "* " -> let x = LLVM_var (newtmp ()) in
+          (x,string_of_value x ^ " = load i32, i32* " ^ string_of_value var ^ "\n")
+        | _ -> (var,"")
+    end
     |LLVM_tab_var (y, i) -> begin
         let v1, s1 = llvm_load ~var:i in
         let size = lookup_size !sym_tab y in
         let x1 = newtmp() in
         let x2 = newtmp() in
-        (LLVM_var x2, s1 ^ (string_of_var x1) ^ " = getelementptr ["^ string_of_int size ^" x i32], ["^ (string_of_int size) ^" x i32]* " ^ (string_of_var y) ^ ", i64 0, i32 " ^ (string_of_value v1) ^ "\n" ^ (string_of_var x2) ^ " = load i32, i32* " ^ (string_of_var x1) ^"\n")
+        (LLVM_var x2, s1 ^ (string_of_var x1) ^
+        " = getelementptr [" ^ string_of_int size ^ " x i32], [" ^ (string_of_int size) ^
+        " x i32]* " ^ (string_of_var y) ^ ", i64 0, i32 " ^ (string_of_value v1) ^
+        "\n" ^ (string_of_var x2) ^ " = load i32, i32* " ^ (x1) ^ "\n")
     end
     |_ -> (var,"")
 
@@ -131,12 +138,12 @@ let llvm_assign ~(res_var : llvm_value) ~(res_type : llvm_type) ~(start_type : l
   let r_v, r_s = llvm_load ~var:right in
   match res_var with
   | LLVM_i32 x -> failwith "assignation à un entier"
-  | LLVM_var x -> "store " ^ string_of_type start_type ^ " " ^ (string_of_value r_v) ^ ", " ^ string_of_type res_type ^ " " ^ (string_of_var x) ^ "\n"
+  | LLVM_var x -> r_s ^ "store " ^ string_of_type start_type ^ " " ^ (string_of_value r_v) ^ ", " ^ string_of_type res_type ^ " " ^ (string_of_var x) ^ "\n"
   | LLVM_tab_var (x, i) ->   let v, s = llvm_load ~var:i in
   let size = lookup_size !sym_tab x in
   let ptr = newtmp() in
   r_s ^
-  ptr ^ " = getelementptr [" ^ string_of_int size ^ " x i32 ] , [" ^ string_of_int size ^ " x i32 ]∗ " ^ x ^ ", i64 0 , i32 " ^ (string_of_value v) ^ "\n" ^
+  ptr ^ " = getelementptr [" ^ string_of_int size ^ " x i32 ] , [" ^ string_of_int size ^ " x i32 ]* " ^ x ^ ", i64 0 , i32 " ^ (string_of_value v) ^ "\n" ^
   "store " ^ string_of_type start_type ^ " " ^ (string_of_value r_v) ^ ", " ^ string_of_type res_type ^ " " ^ ptr ^ "\n"
   (*
 currently produces (for example)
@@ -166,7 +173,7 @@ let llvm_read ~(var : llvm_value) : llvm_instr =
 let llvm_print ~(var : string) : llvm_ir =
   let res, len = string_transform var in
   let fmt = newglob "print" in
-  let fmt2 =  fmt ^ " = global [" ^ string_of_int len ^ " x i8 ] c\"" ^ res ^ "\"" in
+  let fmt2 =  fmt ^ " = global [" ^ string_of_int len ^ " x i8 ] c\"" ^ res ^ "\"\n" in
   let body = "call i32 (i8*, ...) @printf ( i8* getelementptr inbounds ([" ^ string_of_int (len) ^ " x i8 ] , [" ^ string_of_int (len) ^ " x i8 ]* " ^ fmt ^ " ,
   i64 0 , i64 0) ) \n" in
   {header = Atom fmt2 ; body = Atom body}

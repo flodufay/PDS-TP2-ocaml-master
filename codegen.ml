@@ -56,6 +56,7 @@ and ir_of_expression : expression -> llvm_ir * llvm_value = function
 and ir_of_statement : statement -> llvm_ir * llvm_value = function
    |IntStatement(l) -> begin match l with
       |IdentExpression(s)::q -> let ir, v = ir_of_statement (IntStatement(q)) in
+      sym_tab := add !sym_tab (VariableSymbol(Type_Int, "%v" ^ s));
    ((((empty_ir) @:"%v" ^ s ) @: " = alloca i32\n" )@@ ir), v
       |TabptrExpression(s, i)::q -> let ir, v = ir_of_statement (IntStatement(q)) in
       sym_tab := add !sym_tab (VariableSymbol(Type_Array(i), "%v" ^ s));
@@ -116,6 +117,9 @@ and ir_of_statement : statement -> llvm_ir * llvm_value = function
       | IdentExpression(s)::q -> let ir1, v1 = ir_of_statement(PrintStatement(q)) in
                                  let ir2,v2 = ir_of_expression(IdentExpression(s)) in
          ((empty_ir @: (llvm_print_ident(v2))) @@ ir1), v1
+      | TabptrExpression(s, i)::q -> let ir1, v1 = ir_of_statement(PrintStatement(q)) in
+                                    let ir2, v2 = ir_of_expression(TabptrExpression(s, i)) in
+                                    ((empty_ir @: (llvm_print_ident(v2))) @@ ir1), v1
       | [] -> empty_ir, (LLVM_i32 0)
       | _ -> failwith("print un objet qui n'est pas une string")
    end

@@ -45,5 +45,11 @@ let lookup_size tab id : int =
   end
   | _ -> failwith("regarde le type d'un objet qui n'est pas un symbole ")
 
+
+let lookup_etoile tab id =
+  match lookup tab id with
+      | Some(VariableSymbol(ty, _)) -> "* "
+      | _ -> " "
+
 (* Note : obviously not symmetric *)
 let merge = (@)
