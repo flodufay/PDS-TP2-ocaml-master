@@ -4,7 +4,7 @@ let tmp = ref 0
 let lab = ref 0
 let glob = ref 0
 
-let sym_tab = ref [] in
+let sym_tab  : symbol_table ref = ref [] 
 
 (* generate a new unique local identifier (starting with %) *)
 let newtmp: unit -> string = function () ->

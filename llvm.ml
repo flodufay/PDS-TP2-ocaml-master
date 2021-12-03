@@ -103,7 +103,7 @@ let rec llvm_load ~(var : llvm_value) : llvm_value * llvm_instr =
         let size = lookup_size !sym_tab y in
         let x1 = newtmp() in
         let x2 = newtmp() in
-        (x2, s1 ^ (string_of_var x1) ^ " = getelementptr ["^ (string_of_int size) ^" x i32], ["^ (string_of_int size) ^" x i32]* " ^ (string_of_var y) ^ ", i64 0, i32 " ^ (string_of_value v1) ^ "\n" ^ (string_of_var x2) ^ " = load i32, i32* " (string_of_value x1) "\n")
+        (LLVM_var x2, s1 ^ (string_of_var x1) ^ " = getelementptr ["^ string_of_int size ^" x i32], ["^ (string_of_int size) ^" x i32]* " ^ (string_of_var y) ^ ", i64 0, i32 " ^ (string_of_value v1) ^ "\n" ^ (string_of_var x2) ^ " = load i32, i32* " ^ (string_of_var x1) ^"\n")
     end
     |_ -> (var,"")
 
@@ -128,12 +128,12 @@ let llvm_div ~(res_var : llvm_var) ~(res_type : llvm_type) ~(left : llvm_value) 
   s1 ^ s2 ^ string_of_var res_var ^ " = udiv " ^ string_of_type res_type ^ " " ^ string_of_value v1 ^ ", " ^ string_of_value v2 ^ "\n"
 
 let llvm_assign ~(res_var : llvm_value) ~(res_type : llvm_type) ~(start_type : llvm_type) ~(right : llvm_value) : llvm_instr =
-  let r_v, r_s = llvm_load right in
+  let r_v, r_s = llvm_load ~var:right in
   match res_var with
   | LLVM_i32 x -> failwith "assignation à un entier"
   | LLVM_var x -> "store " ^ string_of_type start_type ^ " " ^ (string_of_value r_v) ^ ", " ^ string_of_type res_type ^ " " ^ (string_of_var x) ^ "\n"
   | LLVM_tab_var (x, i) ->   let v, s = llvm_load ~var:i in
-  let size = lookup_size sym_tab x in
+  let size = lookup_size !sym_tab x in
   let ptr = newtmp() in
   r_s ^
   ptr ^ " = getelementptr [" ^ string_of_int size ^ " x i32 ] , [" ^ string_of_int size ^ " x i32 ]∗ " ^ x ^ ", i64 0 , i32 " ^ (string_of_value v) ^ "\n" ^

@@ -59,7 +59,7 @@ and ir_of_statement : statement -> llvm_ir * llvm_value = function
    ((((empty_ir) @:"%v" ^ s ) @: " = alloca i32\n" )@@ ir), v
       |TabptrExpression(s, i)::q -> let ir, v = ir_of_statement (IntStatement(q)) in
       sym_tab := add !sym_tab (VariableSymbol(Type_Array(i), "%v" ^ s));
-   ((((empty_ir) @:"%v" ^ s ) @: " = alloca [" ^ string_of_int i " x i32]\n" )@@ ir), v
+   ((((empty_ir) @:"%v" ^ s ) @: " = alloca [" ^ string_of_int i ^" x i32]\n" )@@ ir), v
       |[] -> empty_ir, (LLVM_i32 0)
       |_ -> failwith("déclaration d'un objet qui n'est pas une variable")
    end
