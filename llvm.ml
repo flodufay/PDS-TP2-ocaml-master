@@ -135,7 +135,8 @@ let llvm_assign ~(res_var : llvm_value) ~(res_type : llvm_type) ~(start_type : l
   | LLVM_tab_var (x, i) ->   let v, s = llvm_load ~var:i in
   let size = lookup_size sym_tab x in
   let ptr = newtmp() in
-  ptr ^ " = getelementptr [" ^ string_of_int size ^ " x i32 ] , [" ^ string_of_int size ^ " x i32 ]∗ " ^ x ^ ", i64 0 , i32" ^ (string_of_value v) ^ "\n" ^
+  r_s ^
+  ptr ^ " = getelementptr [" ^ string_of_int size ^ " x i32 ] , [" ^ string_of_int size ^ " x i32 ]∗ " ^ x ^ ", i64 0 , i32 " ^ (string_of_value v) ^ "\n" ^
   "store " ^ string_of_type start_type ^ " " ^ (string_of_value r_v) ^ ", " ^ string_of_type res_type ^ " " ^ ptr ^ "\n"
   (*
 currently produces (for example)
