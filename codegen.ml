@@ -52,6 +52,7 @@ and ir_of_expression : expression -> llvm_ir * llvm_value = function
   | TabptrExpression (s, i) ->
      empty_ir, LLVM_tab_var ("%v" ^ s, LLVM_i32 i)
 
+(* TO DO faire une fonction recusive qui permet de savoir quelles variables sont des tableaux pour ensuite faire tous les calculs vectoriels *)
 
 and ir_of_statement : statement -> llvm_ir * llvm_value = function
    |IntStatement(l) -> begin match l with
