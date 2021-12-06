@@ -43,11 +43,12 @@ let lookup_size tab id : int =
       | Type_Int -> failwith "regarde la taille d'un entier"
       | Type_Array x -> x
   end
-  | _ -> failwith("regarde le type d'un objet qui n'est pas un symbole ")
+  | _ -> failwith("regarde la taille d'un objet qui n'est pas un symbole ")
 
-let lookup_type tab id : int =
+let lookup_type tab id : typ =
   match lookup tab id with
   | Some(VariableSymbol(ty, _)) -> ty
+  | None -> Type_None
   | _ -> failwith("regarde le type d'un objet qui n'est pas un symbole ")
 
 

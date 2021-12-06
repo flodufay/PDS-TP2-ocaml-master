@@ -14,6 +14,7 @@ type llvm_var = string
 
 type llvm_value =
   | LLVM_i32 of int
+  | LLVM_tab of llvm_value array
   | LLVM_var of llvm_var
   | LLVM_tab_var of llvm_var * llvm_value
 (* TODO: to complete? *)
@@ -112,7 +113,10 @@ let rec llvm_load ~(var : llvm_value) : llvm_value * llvm_instr =
         " x i32]* " ^ (string_of_var y) ^ ", i64 0, i32 " ^ (string_of_value v1) ^
         "\n" ^ (string_of_var x2) ^ " = load i32, i32* " ^ (x1) ^ "\n")
     end
+    |LLVM_tab l -> failwith "un tableau est arrivé jusqu'au load (rappel : on autorise pas le return de tableau et le fais d'accéder a une case d'un tableau constant (uniquement pour l'assignation)"
     |_ -> (var,"")
+
+    (*mettre le nouveau type de tableau*)
 
 let llvm_add ~(res_var : llvm_var) ~(res_type : llvm_type) ~(left : llvm_value) ~(right : llvm_value) : llvm_instr =
   let v1,s1 = llvm_load ~var:left in

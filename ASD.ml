@@ -26,6 +26,7 @@ type statement =
 type typ =
   | Type_Int
   | Type_Array of int
+  | Type_None
 
 (* type func =
   | FunctionPrototype of typ * expression * expression list

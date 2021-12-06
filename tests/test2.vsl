@@ -1,7 +1,9 @@
-INT var, t[8]
+INT var, t[3], p[3]
 var := 3
 t[1] := 4
-
+p[1] := 1
 var := t[1]
 t[2] := var + 1
+p[2] := 54
+t := t + p
 PRINT var, t[1], t[2]

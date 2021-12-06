@@ -15,7 +15,7 @@ let _ =
 
     (* Print LLVM IR *)
     let ir = Codegen.ir_of_ast ast in
-    print_endline (Llvm.string_of_ir ir)
+    print_endline (Llvm.string_of_ir ir) 
 
 
   with
